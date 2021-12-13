@@ -1,12 +1,11 @@
-import * as actionTypes from "./shopping-types";
 import {
   ADD_TO_CART,
   FETCHING_PRODUCTS,
   FETCHING_PRODUCTS_SUCCESS,
   REMOVE_FROM_CART,
-  LOAD_CURRENT_ITEM,
+  REMOVE_ALL_FROM_CART,
   ADJUST_QTY,
-} from "./shopping-actions";
+} from "./shopping-types";
 import { REHYDRATE } from "redux-persist";
 
 const INITIAL_STATE = {
@@ -14,11 +13,9 @@ const INITIAL_STATE = {
   isLoadingProducts: false,
   productsAddedToCart: [],
   isAddedToCart: false,
-  currentItem: null,
 };
 
 const shopReducer = (state = INITIAL_STATE, action) => {
-  console.log("Proba: Product reducer", action);
   switch (action.type) {
     case REHYDRATE: {
       return {
@@ -30,11 +27,25 @@ const shopReducer = (state = INITIAL_STATE, action) => {
     }
     case ADD_TO_CART: {
       const itemId = action.itemId;
+      console.log("Id " + itemId);
+      const product = state.products.find(
+        (x) => x.componentId === action.itemId
+      );
+      const inCart = state.productsAddedToCart.find((item) =>
+        item.componentId === action.itemId ? true : false
+      );
       return {
         ...state,
-        productsAddedToCart: [
-          ...new Set([...state.productsAddedToCart, itemId]),
-        ],
+        productsAddedToCart: inCart
+          ? state.productsAddedToCart.map((item) =>
+              item.componentId === action.itemId
+                ? { ...item, qty: item.qty + 1 }
+                : item
+            )
+          : [
+              ...state.productsAddedToCart,
+              { ...product, qty: 1, isAddedToCart: true },
+            ],
       };
     }
     case REMOVE_FROM_CART: {
@@ -45,14 +56,23 @@ const shopReducer = (state = INITIAL_STATE, action) => {
         productsAddedToCart: state.productsAddedToCart.filter(
           (x) => x.componentId !== itemId
         ),
-        isAddedToCart: false,
+      };
+    }
+    case REMOVE_ALL_FROM_CART: {
+      return {
+        ...state,
+        productsAddedToCart: [],
       };
     }
     case ADJUST_QTY: {
-      return { ...state };
-    }
-    case LOAD_CURRENT_ITEM: {
-      return { ...state };
+      return {
+        ...state,
+        productsAddedToCart: state.productsAddedToCart.map((item) =>
+          item.componentId === action.itemId
+            ? { ...item, qty: +action.value }
+            : item
+        ),
+      };
     }
     case FETCHING_PRODUCTS:
       return {
@@ -61,7 +81,6 @@ const shopReducer = (state = INITIAL_STATE, action) => {
       };
     case FETCHING_PRODUCTS_SUCCESS: {
       const products = action.products;
-      console.log("produs" + products);
       return {
         ...state,
         isLoadingProducts: false,

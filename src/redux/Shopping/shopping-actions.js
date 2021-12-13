@@ -1,17 +1,16 @@
-import * as actionTypes from "./shopping-types";
+import {
+  ADD_TO_CART,
+  FETCHING_PRODUCTS,
+  FETCHING_PRODUCTS_SUCCESS,
+  REMOVE_FROM_CART,
+  REMOVE_ALL_FROM_CART,
+  ADJUST_QTY,
+} from "./shopping-types";
 import axios from "axios";
-
-export const ADD_TO_CART = "ADD_TO_CART";
-export const REMOVE_FROM_CART = "REMOVE_FROM_CART";
-export const ADJUST_QTY = "ADJUST_QTY";
-export const LOAD_CURRENT_ITEM = "LOAD_CURRENT_ITEM";
-export const FETCHING_PRODUCTS = "FETCHING_PRODUCTS";
-export const FETCHING_PRODUCTS_SUCCESS = "FETCHING_PRODUCTS_SUCCESS";
 
 export const fetchProducts = () => {
   return async (dispatch, getState) => {
-    dispatch({ type: actionTypes.FETCHING_PRODUCTS });
-    console.log("probasadsad");
+    dispatch({ type: FETCHING_PRODUCTS });
     var result = await axios.get("https://localhost:44326/CPU");
     const cpus = result.data;
 
@@ -46,14 +45,14 @@ export const removeFromCart = (itemId) => {
   };
 };
 
-export const adjustQty = (itemId, value) => {
+export const removeAllFromCart = () => {
   return (dispatch, getState) => {
-    dispatch({ type: ADJUST_QTY, itemId, value });
+    dispatch({ type: REMOVE_ALL_FROM_CART });
   };
 };
 
-export const loadCurrentItem = (item) => {
+export const adjustQty = (itemId, value) => {
   return (dispatch, getState) => {
-    dispatch({ type: LOAD_CURRENT_ITEM, item });
+    dispatch({ type: ADJUST_QTY, itemId, value });
   };
 };

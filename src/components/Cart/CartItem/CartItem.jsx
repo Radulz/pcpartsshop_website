@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import {
   Typography,
@@ -9,12 +9,37 @@ import {
   CardMedia,
   TextField,
   IconButton,
+  Input,
 } from "@material-ui/core";
 import useStyles from "./styles";
 
-const CartItem = (props) => {
+import { connect } from "react-redux";
+import {
+  removeFromCart,
+  adjustQty,
+} from "../../../redux/Shopping/shopping-actions";
+
+const CartItem = ({ product, removeFromCart, adjustQty }) => {
   const classes = useStyles();
-  const { product } = props;
+  const [input, setInput] = useState(product.qty);
+  const onChangeHandler = (e) => {
+    setInput(e.target.value);
+    adjustQty(product.componentId, e.target.value);
+  };
+  const plusOneQty = () => {
+    setInput(product.qty + 1);
+    adjustQty(product.componentId, product.qty + 1);
+  };
+  const minusOneQty = () => {
+    if (product.qty === 1) {
+      setInput(product.qty);
+      adjustQty(product.componentId, product.qty);
+    } else {
+      setInput(product.qty - 1);
+      adjustQty(product.componentId, product.qty - 1);
+    }
+  };
+  const productPrice = parseFloat(product.price.toFixed(2)) * product.qty;
   return (
     <Card>
       <CardMedia
@@ -29,38 +54,35 @@ const CartItem = (props) => {
       </CardContent>
       <CardActions disableSpacing className={classes.cartActions}>
         <div class={classes.cartActionsDivLeft}>
-          <IconButton type="button" size="medium">
+          <IconButton type="button" size="medium" onClick={minusOneQty}>
             -
           </IconButton>
-          <TextField
+          <Input
             id="quantity"
-            margin="normal"
+            //margin="normal"
+            min="1"
             type="readonly"
-            defaultValue="1"
-            //style={{ width: 50, textAlign: "center" }}
-            // onChange={event => {
-            //   setQuantity(event.target.value);
-            //   props.addToTotalSum(totalProductPrice);
-            // }}
+            value={input}
+            onChange={onChangeHandler}
             inputProps={{
               inputMode: "numeric",
               pattern: "[0-9]*",
               style: { width: 50, textAlign: "center" },
             }}
           />
-          <IconButton type="button" size="medium">
+          <IconButton type="button" size="medium" onClick={plusOneQty}>
             +
           </IconButton>
         </div>
         <div class={classes.cartActionsDivRight}>
           <Typography variant="h6" style={{ marginRight: "10px" }}>
-            {product.price + "$"}
+            {productPrice + "$"}
           </Typography>
           <Button
             variant="contained"
             type="button"
             color="secondary"
-            onClick={() => props.removeFromCart(product.componentId)}
+            onClick={() => removeFromCart(product.componentId)}
           >
             Remove
           </Button>
@@ -70,4 +92,11 @@ const CartItem = (props) => {
   );
 };
 
-export default CartItem;
+const mapDispatchToProps = (dispatch) => {
+  return {
+    removeFromCart: (id) => dispatch(removeFromCart(id)),
+    adjustQty: (id, value) => dispatch(adjustQty(id, value)),
+  };
+};
+
+export default connect(null, mapDispatchToProps)(CartItem);

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Typography, Grid } from "@material-ui/core";
 import Product from "./Product/Product";
 import useStyles from "./styles";
+import Dropdown from "./Dropdown/Dropdown";
 
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
@@ -9,6 +10,7 @@ import * as shoppingActions from "../../redux/Shopping/shopping-actions";
 
 const Products = (props) => {
   const { products = [], isLoadingParts = false } = props;
+  const [selected, setSelected] = useState("");
   const classes = useStyles();
   useEffect(() => {
     props.fetchProducts();
@@ -19,55 +21,36 @@ const Products = (props) => {
         <Typography>Loading parts...</Typography>
       </Grid>
     );
-  // const [cpus, setCPUs] = useState();
-  // const [gpus, setGPUs] = useState();
-  // const [mobos, setMOBOs] = useState();
-  // const [psus, setPSUs] = useState();
-  // const [rams, setRAMs] = useState();
-
-  // const [cart, setCart] = useState([]);
-
-  // const addToCart = (product) => {
-  //   setCart([...cart, product]);
-  // };
-
-  // useEffect(() => {
-  //   fetchCPUs();
-  //   fetchGPUs();
-  //   fetchMOBOs();
-  //   fetchPSUs();
-  //   fetchRAMs();
-  // }, []);
-
-  // const fetchCPUs = async () => {
-  //   const result = await axios.get("https://localhost:44326/CPU");
-  //   const cpus = result.data;
-  //   setCPUs(cpus);
-  // };
-
-  // const fetchGPUs = async () => {
-  //   const result = await axios.get("https://localhost:44326/GPU");
-  //   const gpus = result.data;
-  //   setGPUs(gpus);
-  // };
-
-  // const fetchMOBOs = async () => {
-  //   const result = await axios.get("https://localhost:44326/MOBO");
-  //   const mobos = result.data;
-  //   setMOBOs(mobos);
-  // };
-
-  // const fetchPSUs = async () => {
-  //   const result = await axios.get("https://localhost:44326/PSU");
-  //   const psus = result.data;
-  //   setPSUs(psus);
-  // };
-
-  // const fetchRAMs = async () => {
-  //   const result = await axios.get("https://localhost:44326/RAM");
-  //   const rams = result.data;
-  //   setRAMs(rams);
-  // };
+  let filteredProducts = [];
+  switch (selected) {
+    case "CPU":
+      filteredProducts = products.filter((p) => p.componentType === "CPU");
+      console.log(filteredProducts);
+      break;
+    case "GPU":
+      filteredProducts = products.filter((p) => p.componentType === "GPU");
+      console.log(filteredProducts);
+      break;
+    case "Motherboards":
+      filteredProducts = products.filter((p) => p.componentType === "MOBO");
+      console.log(filteredProducts);
+      break;
+    case "Power Units":
+      filteredProducts = products.filter((p) => p.componentType === "PSU");
+      console.log(filteredProducts);
+      break;
+    case "Ram memory sticks":
+      filteredProducts = products.filter((p) => p.componentType === "RAM");
+      console.log(filteredProducts);
+      break;
+    case "Remove Filter":
+      filteredProducts = products;
+      console.log(filteredProducts);
+      break;
+    default:
+      filteredProducts = products;
+      console.log(filteredProducts);
+  }
 
   return (
     <main className={classes.content}>
@@ -76,18 +59,14 @@ const Products = (props) => {
         <div
           style={{
             display: "flex",
-            justifyContent: "flex-start",
+            justifyContent: "start",
             alignSelf: "flex-start",
-            maxWidth: "50px",
+            maxWidth: "200px",
           }}
         >
-          <Typography>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Dignissimos
-            nam eum, similique doloremque sed hic commodi expedita praesentium
-            placeat temporibus, totam officiis blanditiis asperiores dolorem cum
-          </Typography>
+          <Dropdown selected={selected} setSelected={setSelected}></Dropdown>
         </div>
-        <div className={classes.container}>
+        <div className={classes.smallContainer}>
           <Grid
             container
             justify="center"
@@ -95,8 +74,8 @@ const Products = (props) => {
             style={{ height: "100 vh" }}
             lg={8}
           >
-            {products &&
-              products.map((product, key) => (
+            {filteredProducts &&
+              filteredProducts.map((product, key) => (
                 <Grid
                   item
                   key={product.componentId}
@@ -109,36 +88,7 @@ const Products = (props) => {
                 </Grid>
               ))}
 
-            {/* {cpus &&
-              cpus.map((CPU) => (
-                <Grid item key={CPU.componentId} xs={12} sm={6} md={4} lg={4}>
-                  <Product product={CPU} />
-                </Grid>
-              ))}
-            {gpus &&
-              gpus.map((GPU) => (
-                <Grid item key={GPU.componentId} xs={12} sm={6} md={4} lg={4}>
-                  <Product product={GPU} />
-                </Grid>
-              ))}
-            {psus &&
-              psus.map((PSU) => (
-                <Grid item key={PSU.componentId} xs={12} sm={6} md={4} lg={4}>
-                  <Product product={PSU} />
-                </Grid>
-              ))}
-            {mobos &&
-              mobos.map((MOBO) => (
-                <Grid item key={MOBO.componentId} xs={12} sm={6} md={4} lg={4}>
-                  <Product product={MOBO} />
-                </Grid>
-              ))}
-            {rams &&
-              rams.map((RAM) => (
-                <Grid item key={RAM.componentId} xs={12} sm={6} md={4} lg={4}>
-                  <Product product={RAM} />
-                </Grid>
-              ))} */}
+            {console.log(selected)}
           </Grid>
         </div>
       </div>

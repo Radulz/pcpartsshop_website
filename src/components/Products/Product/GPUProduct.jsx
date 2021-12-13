@@ -72,7 +72,7 @@ const GPUProduct = (props) => {
         />
       </CardContent>
       <CardActions disableSpacing className={classes.cardActions}>
-        <Typography variant="h5">{product.price + "$"}</Typography>
+        <Typography variant="h5">{product.price.toFixed(2) + "$"}</Typography>
         <IconButton
           aria-label="Add to Cart"
           onClick={() => props.addToCart(product.componentId)}

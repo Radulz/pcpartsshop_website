@@ -10,10 +10,14 @@ export default makeStyles((theme) => ({
   root: {
     flexGrow: 1,
   },
-  container: {
+  smallContainer: {
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
   },
+  // container: {
+  //   display: "block",
+  //   position: "relative",
+  // },
 }));

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   AppBar,
   Toolbar,
@@ -15,7 +15,17 @@ import { Link, useLocation } from "react-router-dom";
 import logo from "../../images/LoginLogo.png";
 import useStyles from "./styles";
 
-const NavBar = () => {
+import { connect } from "react-redux";
+
+const NavBar = ({ productsAddedToCart }) => {
+  const [cartCount, setCartCount] = useState(0);
+  useEffect(() => {
+    let count = 0;
+    productsAddedToCart.forEach((x) => {
+      count += x.qty;
+    });
+    setCartCount(count);
+  }, [productsAddedToCart, cartCount]);
   const classes = useStyles();
   const location = useLocation();
   return (
@@ -45,11 +55,16 @@ const NavBar = () => {
               aria-label="Show cart items"
               color="inherit"
             >
-              <Badge>
+              <Badge badgeContent={cartCount} color="secondary">
                 <ShoppingCart />
               </Badge>
             </IconButton>
-            <Button variant="outlined" style={{ marginLeft: "20px" }}>
+            <Button
+              component={Link}
+              to="/login"
+              variant="outlined"
+              style={{ marginLeft: "20px" }}
+            >
               Login
             </Button>
           </div>
@@ -59,4 +74,10 @@ const NavBar = () => {
   );
 };
 
-export default NavBar;
+const mapStateToProps = (state) => {
+  return {
+    productsAddedToCart: state.shopReducer.productsAddedToCart,
+  };
+};
+
+export default connect(mapStateToProps)(NavBar);
