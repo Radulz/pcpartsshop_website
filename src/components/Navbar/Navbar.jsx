@@ -14,10 +14,10 @@ import { ShoppingCart } from "@material-ui/icons";
 import { Link, useLocation } from "react-router-dom";
 import logo from "../../images/LoginLogo.png";
 import useStyles from "./styles";
-
 import { connect } from "react-redux";
+import { logOut } from "../../redux/User/user-actions";
 
-const NavBar = ({ productsAddedToCart }) => {
+const NavBar = ({ productsAddedToCart, isLoggedIn, logOut, email }) => {
   const [cartCount, setCartCount] = useState(0);
   useEffect(() => {
     let count = 0;
@@ -59,14 +59,24 @@ const NavBar = ({ productsAddedToCart }) => {
                 <ShoppingCart />
               </Badge>
             </IconButton>
-            <Button
-              component={Link}
-              to="/login"
-              variant="outlined"
-              style={{ marginLeft: "20px" }}
-            >
-              Login
-            </Button>
+            {!isLoggedIn ? (
+              <Button
+                component={Link}
+                to="/login"
+                variant="outlined"
+                style={{ marginLeft: "20px" }}
+              >
+                Login
+              </Button>
+            ) : (
+              <Button
+                variant="outlined"
+                style={{ marginLeft: "20px" }}
+                onClick={() => logOut(email)}
+              >
+                Logout
+              </Button>
+            )}
           </div>
         )}
       </Toolbar>
@@ -77,7 +87,17 @@ const NavBar = ({ productsAddedToCart }) => {
 const mapStateToProps = (state) => {
   return {
     productsAddedToCart: state.shopReducer.productsAddedToCart,
+    isLoggedIn: state.userReducer.isLoggedIn,
+    email: state.userReducer.email,
   };
 };
 
-export default connect(mapStateToProps)(NavBar);
+const mapDispatchToProps = (dispatch) => {
+  return {
+    logOut: (email) => {
+      dispatch(logOut(email));
+    },
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(NavBar);

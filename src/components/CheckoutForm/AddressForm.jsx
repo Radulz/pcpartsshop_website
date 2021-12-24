@@ -1,4 +1,5 @@
 import React from "react";
+import * as constants from "../../constants/AddressFormConstants";
 import {
   InputLabel,
   Select,
@@ -13,10 +14,23 @@ import {
 } from "@material-ui/core";
 import { useForm, FormProvider } from "react-hook-form";
 import { Link } from "react-router-dom";
+import { connect } from "react-redux";
+import FormInputField from "../FormInputField/FormInputField";
 
-const AddressForm = ({ next }) => {
+const AddressForm = ({
+  next,
+  email,
+  firstName,
+  lastName,
+  county,
+  city,
+  address,
+  isLoggedIn,
+}) => {
   const { register, handleSubmit } = useForm();
-  const onSubmit = (data) => next(data);
+  const onSubmit = (data) => {
+    next(data);
+  };
   return (
     <>
       <Typography variant="h6" gutterBottom>
@@ -24,77 +38,101 @@ const AddressForm = ({ next }) => {
       </Typography>
       <FormProvider>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <Grid container spacing={3}>
-            <Grid item xs={12} sm={6}>
-              <FormControl>
-                <InputLabel htmlFor="component-simple">First Name</InputLabel>
-                <Input
-                  id="component-simple"
-                  fullWidth
-                  {...register("firstName", { required: true, maxLength: 20 })}
+          <Grid container spacing={4}>
+            {!isLoggedIn ? (
+              <>
+                <FormInputField
+                  name={constants.FIRST_NAME}
+                  labelText={constants.FIRST_NAME_LABEL}
+                  register={register}
+                  isLoggedIn={false}
                 />
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <FormControl>
-                <InputLabel htmlFor="component-simple">Last Name</InputLabel>
-                <Input
-                  id="component-simple"
-                  fullWidth
-                  {...register("lastName", { required: true, maxLength: 20 })}
+                <FormInputField
+                  name={constants.LAST_NAME}
+                  labelText={constants.LAST_NAME_LABEL}
+                  register={register}
+                  isLoggedIn={false}
                 />
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <FormControl>
-                <InputLabel htmlFor="component-simple">Email</InputLabel>
-                <Input
-                  id="component-simple"
-                  {...register("email", { required: true, maxLength: 32 })}
+                <FormInputField
+                  name={constants.EMAIL}
+                  labelText={constants.EMAIL_LABEL}
+                  register={register}
+                  isLoggedIn={false}
                 />
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <FormControl>
-                <InputLabel htmlFor="component-simple">County</InputLabel>
-                <Input
-                  id="component-simple"
-                  {...register("county", { required: true, maxLength: 20 })}
+                <FormInputField
+                  name={constants.COUNTY}
+                  labelText={constants.COUNTY_LABEL}
+                  register={register}
+                  isLoggedIn={false}
                 />
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <FormControl>
-                <InputLabel htmlFor="component-simple">City</InputLabel>
-                <Input
-                  id="component-simple"
-                  {...register("city", { required: true, maxLength: 20 })}
+                <FormInputField
+                  name={constants.CITY}
+                  labelText={constants.CITY_LABEL}
+                  register={register}
+                  isLoggedIn={false}
                 />
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <FormControl>
-                <InputLabel htmlFor="component-simple">Address1</InputLabel>
-                <Input
-                  id="component-simple"
-                  fullWidth
-                  {...register("address1", { required: true, maxLength: 100 })}
+                <FormInputField
+                  name={constants.ADDRESS}
+                  labelText={constants.ADDRESS_LABEL}
+                  register={register}
+                  isLoggedIn={false}
                 />
-              </FormControl>
-            </Grid>
-            {/* <FormInput
-              name="firstName"
-              label="First Name"
-              {...register("firstName", { required: true, maxLength: 20 })}
-            />
-            <FormInput name="lastName" label="Last Name" />
-            <FormInput name="email" label="Email" />
-            <FormInput name="county" label="County" />
-            <FormInput name="city" label="City" />
-            <FormInput name="address1" label="AddressLine1" /> */}
+              </>
+            ) : (
+              <>
+                <FormInputField
+                  name={constants.FIRST_NAME}
+                  labelText={constants.FIRST_NAME_LABEL}
+                  register={register}
+                  defaultValue={firstName}
+                  isLoggedIn={true}
+                />
+                <FormInputField
+                  name={constants.LAST_NAME}
+                  labelText={constants.LAST_NAME_LABEL}
+                  register={register}
+                  defaultValue={lastName}
+                  isLoggedIn={true}
+                />
+                <FormInputField
+                  name={constants.EMAIL}
+                  labelText={constants.EMAIL_LABEL}
+                  register={register}
+                  defaultValue={email}
+                  isLoggedIn={true}
+                />
+                <FormInputField
+                  name={constants.COUNTY}
+                  labelText={constants.COUNTY_LABEL}
+                  register={register}
+                  defaultValue={county}
+                  isLoggedIn={true}
+                />
+                <FormInputField
+                  name={constants.CITY}
+                  labelText={constants.CITY_LABEL}
+                  register={register}
+                  defaultValue={city}
+                  isLoggedIn={true}
+                />
+                <FormInputField
+                  name={constants.ADDRESS}
+                  labelText={constants.ADDRESS_LABEL}
+                  register={register}
+                  defaultValue={address}
+                  isLoggedIn={true}
+                />
+              </>
+            )}
           </Grid>
           <br />
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              marginTop: "25px",
+            }}
+          >
             <Button component={Link} to="/cart" variant="outlined">
               Back to Cart
             </Button>
@@ -108,4 +146,16 @@ const AddressForm = ({ next }) => {
   );
 };
 
-export default AddressForm;
+const mapStateToProps = (state) => {
+  return {
+    email: state.userReducer.email,
+    firstName: state.userReducer.firstName,
+    lastName: state.userReducer.lastName,
+    county: state.userReducer.county,
+    city: state.userReducer.city,
+    address: state.userReducer.address,
+    isLoggedIn: state.userReducer.isLoggedIn,
+  };
+};
+
+export default connect(mapStateToProps)(AddressForm);
